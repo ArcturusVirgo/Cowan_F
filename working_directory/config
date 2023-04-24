@@ -1,0 +1,21 @@
+wavelength_range - 波长范围(nm) real(8) real(8)
+7d0 18d0
+fwhmgauss - 半高全宽 real(8)
+0.27d0
+delta - 谱线偏移 real(8)
+0.0d0
+ion_num - 离子种类数 integer
+10
+ion_filename - 离子文件名 character(:)
+spectra-Ge4.dat
+spectra-Ge5.dat
+spectra-Ge6.dat
+spectra-Ge7.dat
+spectra-Ge8.dat
+spectra-Ge9.dat
+spectra-Ge10.dat
+spectra-Ge11.dat
+spectra-Ge12.dat
+spectra-Ge13.dat
+abundance_filename - 离子丰度数据 character(:)
+abu.dat

@@ -1,7 +1,7 @@
       program Ion_Ratio
 
 c     input the Atomic index and initial temperature
-      parameter (N=32)
+      parameter (N=13)
 c     #########################################################
 c	    #    使用说明：                                          #
 c	    #       1）需创建初始输入文件ipinput.dat                   #
@@ -16,10 +16,12 @@ c     #########################################################
       real S(N),Ar(N),A3r(N),Rat(N+1),CoM(N),CoMM(N),Cosum,
      X      Co(N),Ratio(N+1),Rsum(N),RRR(10000,N+1),
      X      TTT(N+1,10000),aveion,kk
+       real Te
+       integer :: index_Te
 
 c     定义输入文件（电荷态，电离能，最外层电子数），输出文件（比率）
-      open(1,file='ipinput.dat',status='old')
-      open(2,file='rationoutput.dat',status='unknown')
+      open(1,file='Al_ipinput.dat',status='old')
+      open(2,file='Al_data.dat',status='unknown')
 
 c     读入初始数据
       read(1,*) (Z(i),pez(i),pz(i),i=1,N)
@@ -28,10 +30,11 @@ c      write(2,40) (Z(i),pez(i),pz(i),i=1,N)
 
 c      write(2,*) 'output the result:'
 
-      do 2000 Te=15,45,1
+      do 2000 index_Te=15,45,1
+      	Te = 21.6
         k=0
         do 1000 kk=17,22,1
-          pNe=10.0**kk
+          pNe=1.39e20
 c         定义函数S(Z,Te),Ar and A3r
           do 100 i=1,N
             S(i)=(9*(1e-6)*pz(i)*sqrt(Te/pez(i))*exp(-pez(i)/Te))/
@@ -82,7 +85,7 @@ c得到离子丰度
               Ratio(i)=0
             endif
           enddo
-          write(2,50)Te, PNe,(Ratio(i),i=5,14)
+          write(2,50)Te, PNe,(Ratio(i),i=4,7)
 
 1000    continue
 2000  continue

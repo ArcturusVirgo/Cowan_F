@@ -139,7 +139,7 @@ contains
     
     type(t_widen_data) :: result_data
     real(kind = 8) :: max_wavelength_ev, min_wavelength_ev
-    real(kind = 8), dimension(:), allocatable :: new_wavelength, new_itenstiy, new_J, population
+    real(kind = 8), dimension(:), allocatable :: new_wavelength, new_itenstiy, new_energy, new_J, population
     real(kind = 8) :: uu, ss, tt, fwhmgauss, delta
     integer :: num
     integer :: i, j
@@ -155,13 +155,14 @@ contains
     
     ! 找到下态最小能量和最小能量对应的J
     min_energy = cal_data%energy_l(1)
+    min_J = cal_data%J_l(1)
     do i = 2, cal_data%num
       if (min_energy > cal_data%energy_l(i)) then
         min_energy = cal_data%energy_l(i)
         min_J = cal_data%J_l(i)
       end if
     end do
-    
+
     ! 筛选波长范围在实验数据范围内的跃迁正例个数
     num = 0
     do i = 1, cal_data%num
@@ -169,9 +170,11 @@ contains
         num = num + 1
       end if
     end do
+
     ! 分配内存
     allocate(new_wavelength(num))
     allocate(new_itenstiy(num))
+    allocate(new_energy(num))
     allocate(new_J(num))
     allocate(population(num))
     
@@ -185,18 +188,20 @@ contains
         new_itenstiy(num) = abs(cal_data%intensity(i))
         ! 取上态和下态中能量较高的那个和对应的J
         if (cal_data%energy_l(i) > cal_data%energy_h(i)) then
-          new_itenstiy(num) = cal_data%energy_l(i)
+          new_energy(num) = cal_data%energy_l(i)
           new_J(num) = cal_data%J_l(i)
         elseif (cal_data%energy_h(i) > cal_data%energy_l(i)) then
-          new_itenstiy(num) = cal_data%energy_h(i)
+          new_energy(num) = cal_data%energy_h(i)
           new_J(num) = cal_data%J_h(i)
         end if
       end if
     end do
+
+
     
     ! 计算布居
     do i = 1, num
-      population(i) = (2 * new_J(i) + 1) * exp(-abs(new_itenstiy(i) - min_energy) * 0.124 / temperature) / (2 * min_J + 1)
+      population(i) = (2 * new_J(i) + 1) * exp(-abs(new_energy(i) - min_energy) * 0.124 / temperature) / (2 * min_J + 1)
     enddo
     
     ! 初始化，准备展宽
@@ -213,17 +218,18 @@ contains
       tt = 0
       ss = 0
       uu = 0
-      forall( j = 1: num)
+      do j = 1, num
         tt = tt + new_itenstiy(j) / sqrt(2 * pi) / fwhmgauss * 2.355 * &
             exp(-2.355**2 * (new_wavelength(j) - result_data%wavelength_ev(i))**2 / fwhmgauss**2 / 2)
         ss = ss + (new_itenstiy(j) / (2 * new_J(j) + 1)) * (2 * fwhmgauss) / &
             (2 * pi * (((new_wavelength(j) - result_data%wavelength_ev(i))**2 + (2 * fwhmgauss)**2 / 4)))
         uu = uu + (new_itenstiy(j) * population(j) / (2 * new_J(j) + 1)) * (2 * fwhmgauss) / &
             (2 * pi * (((new_wavelength(j) - result_data%wavelength_ev(i))**2 + (2 * fwhmgauss)**2 / 4)))
-      end forall
+      end do
       result_data%gaussian(i) = tt
       result_data%cross_NP(i) = ss
       result_data%cross_P(i) = uu
+
     end do
   end function widen
   
@@ -239,7 +245,7 @@ contains
     type(t_add_spectra) :: add_spectra
     
     integer :: i, j
-    real(kind = 8) :: temperature, Ne, SS_reg, SS_tot, R2
+    real(kind = 8) :: temperature, Ne, sigma
     character(len = 50) :: filename, save_filename
     real(kind = 8), dimension(:), allocatable :: y1, y2
     abu_data = get_abundance_data(config)
@@ -264,30 +270,20 @@ contains
       end do
       ! 拟合的R2计算
       allocate(y1(add_spectra%num), y2(add_spectra%num))
-      SS_reg = 0
-      SS_tot = 0
-      y1 = exp_data%intensity / maxval(exp_data%intensity)
+      y1 = exp_data%intensity/ maxval(exp_data%intensity)
       y2 = add_spectra%intensity(:, i) / maxval(add_spectra%intensity(:, i))
-      do j = 1, add_spectra%num
-        SS_reg = SS_reg + (y2(j) - sum(y1) / exp_data%num)**2
-        SS_tot = SS_tot + (y1(j) - sum(y1) / exp_data%num)**2
-      end do
-      R2 = SS_reg / SS_tot
-      if (R2 > 1) then
-        R2 = 1 / R2
-      end if
-
+      sigma = sqrt(sum((y2-y1)**2)/add_spectra%num)
       deallocate(y1)
       deallocate(y2)
       
       if (i<10)then
-        write(save_filename, '(A, F6.4, A, I1, A)') 'result-', R2, '-', i, '.dat'
+        write(save_filename, '(A, F6.4, A, I1, A)') 'result-', sigma, '-', i, '.dat'
       elseif(i>=10 .and. i<100)then
-        write(save_filename, '(A, F6.4, A, I2, A)') 'result-', R2, '-', i, '.dat'
+        write(save_filename, '(A, F6.4, A, I2, A)') 'result-', sigma, '-', i, '.dat'
       elseif(i>=100 .and. i<1000)then
-        write(save_filename, '(A, F6.4, A, I3, A)') 'result-', R2, '-', i, '.dat'
+        write(save_filename, '(A, F6.4, A, I3, A)') 'result-', sigma, '-', i, '.dat'
       elseif(i>=1000 .and. i<10000)then
-        write(save_filename, '(A, F6.4, A, I3, A)') 'result-', R2, '-', i, '.dat'
+        write(save_filename, '(A, F6.4, A, I3, A)') 'result-', sigma, '-', i, '.dat'
       end if
       open(22, file = save_filename, status = 'unknown')
       do j = 1, add_spectra%num

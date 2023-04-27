@@ -229,7 +229,6 @@ contains
       result_data%gaussian(i) = tt
       result_data%cross_NP(i) = ss
       result_data%cross_P(i) = uu
-
     end do
   end function widen
   
@@ -277,13 +276,13 @@ contains
       deallocate(y2)
       
       if (i<10)then
-        write(save_filename, '(A, F6.4, A, I1, A)') 'result-', sigma, '-', i, '.dat'
+        write(save_filename, '(A, F12.10, A, I1, A)') 'result-', sigma, '-', i, '.dat'
       elseif(i>=10 .and. i<100)then
-        write(save_filename, '(A, F6.4, A, I2, A)') 'result-', sigma, '-', i, '.dat'
+        write(save_filename, '(A, F12.10, A, I2, A)') 'result-', sigma, '-', i, '.dat'
       elseif(i>=100 .and. i<1000)then
-        write(save_filename, '(A, F6.4, A, I3, A)') 'result-', sigma, '-', i, '.dat'
+        write(save_filename, '(A, F12.10, A, I3, A)') 'result-', sigma, '-', i, '.dat'
       elseif(i>=1000 .and. i<10000)then
-        write(save_filename, '(A, F6.4, A, I3, A)') 'result-', sigma, '-', i, '.dat'
+        write(save_filename, '(A, F12.10, A, I4, A)') 'result-', sigma, '-', i, '.dat'
       end if
       open(22, file = save_filename, status = 'unknown')
       do j = 1, add_spectra%num

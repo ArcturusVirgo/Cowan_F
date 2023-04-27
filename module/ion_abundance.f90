@@ -36,17 +36,17 @@ contains
     
     real, dimension(:), allocatable :: ratio, S, Ar, A3r, temp
     integer :: i, j, index_Ne, index_Te
-    real(kind=8) :: Ne, Te
+    real(kind = 8) :: Ne, Te
     
     abu%N = init_data%N
     abu%atomic_name = init_data%atomic_name
     !    allocate(abu%percentage(abu%N))
     allocate(ratio(abu%N - 1), S(abu%N), Ar(abu%N), A3r(abu%N), temp(abu%N))
     
-    do index_Te = 0, 800, 1
-      Te = index_Te / 10.0d0
-      do index_Ne = 17, 17, 1
-        Ne = 3.15d20
+    do index_Te = 1, 50
+      Te = 10 + (40 - 10) / 50.0 * (index_Te - 1)
+      do index_Ne = 17, 23
+        Ne = 10**index_Ne
         do i = 1, init_data%N
           S(i) = (9 * (1e-6) * init_data%electron_num(i) * sqrt(Te / init_data%ion_energy(i)) * &
               exp(-init_data%ion_energy(i) / Te)) / &
@@ -61,7 +61,7 @@ contains
         end do
         abu%percentage = get_percentage(ratio, abu%N)
         open(21, file = filename, status = 'unknown')
-        write(21, '(F6.3,E14.5,2x,48f17.5)') real(Te), Ne, abu%percentage(4:7)
+        write(21, '(F6.3,E14.5,2x,48f17.5)') Te, Ne, abu%percentage(4:7)
       end do
     end do
   

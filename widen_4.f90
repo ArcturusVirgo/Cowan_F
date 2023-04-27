@@ -29,11 +29,11 @@ program Simulations
 	!	 Al 单个测试
 !	config = get_config('config2')
 !	exp_data = get_exp_data('Al_EXP.dat')
-!	cal_data = get_cal_data('spectra.dat')
+!	cal_data = get_cal_data('spectra_Al3.dat')
 !	result_data = widen(config, exp_data, cal_data, 34.6d0, 2.43d21)
 !	open(22, file = 'widen_Al3.dat', status = 'unknown')
 !	do j = 1, result_data%num
-!		write(22, *) result_data%wavelength_nm(j), result_data%gaussian(j)
+!		write(22, *) result_data%wavelength_nm(j), result_data%cross_P(j)
 !	end do
 !	close(22)
 !		do i = 3, 6

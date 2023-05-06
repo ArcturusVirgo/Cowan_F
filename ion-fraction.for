@@ -30,11 +30,11 @@ c      write(2,40) (Z(i),pez(i),pz(i),i=1,N)
 
 c      write(2,*) 'output the result:'
 
-      do 2000 index_Te=15,45,1
-      	Te = 21.6
+      do 2000 index_Te=15,15,1
+      	Te = 25.6
         k=0
-        do 1000 kk=17,22,1
-          pNe=1.39e20
+        do 1000 kk=17,17,1
+          pNe=3.15e20
 c         定义函数S(Z,Te),Ar and A3r
           do 100 i=1,N
             S(i)=(9*(1e-6)*pz(i)*sqrt(Te/pez(i))*exp(-pez(i)/Te))/
@@ -42,6 +42,7 @@ c         定义函数S(Z,Te),Ar and A3r
             Ar(i)=5.2*(1e-14)*sqrt(Pez(i)/Te)*Z(i)*(0.429+0.5*
      X         LOG(Pez(i)/Te)+0.469*sqrt(Te/Pez(i)))
             A3r(i)=2.97*(1e-27)*pz(i)/(Te*pez(i)**2*(4.88+Te/pez(i)))
+!           write(*,*) S(i), Ar(i), A3r(i)
 100       continue
 
 c求解过程-----------
@@ -61,10 +62,6 @@ c         比例系数
           Cosum=Cosum
 c         求解离子数密度
           Rat(1)=PNe/Cosum
-
-
-
-
           do i=2,N+1
             Rat(i)=Co(i-1)*Rat(i-1)
           enddo
@@ -84,6 +81,7 @@ c得到离子丰度
             if (Ratio(i) .LT.1e-6) then
               Ratio(i)=0
             endif
+          write(*,*), Ratio(i)
           enddo
           write(2,50)Te, PNe,(Ratio(i),i=4,7)
 

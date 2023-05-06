@@ -43,10 +43,10 @@ contains
     !    allocate(abu%percentage(abu%N))
     allocate(ratio(abu%N - 1), S(abu%N), Ar(abu%N), A3r(abu%N), temp(abu%N))
     
-    do index_Te = 1, 50
-      Te = 10 + (40 - 10) / 50.0 * (index_Te - 1)
-      do index_Ne = 17, 23
-        Ne = 10**index_Ne
+    do index_Te = 50, 50
+      Te = 28.48
+      do index_Ne = 23, 23
+        Ne = 10**19.4
         do i = 1, init_data%N
           S(i) = (9 * (1e-6) * init_data%electron_num(i) * sqrt(Te / init_data%ion_energy(i)) * &
               exp(-init_data%ion_energy(i) / Te)) / &

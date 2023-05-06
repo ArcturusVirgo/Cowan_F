@@ -20,22 +20,22 @@ program Simulations
 	!		res = add_spectra(exp_data, config)
 
 	!		Al
-		config = get_config('config2')
-		exp_data = get_exp_data('Al_EXP.dat')
-
-		abundance_data = get_abundance_data(config)
-		res = add_spectra(exp_data, config)
+!		config = get_config('config2')
+!		exp_data = get_exp_data('Al_EXP.dat')
+!
+!		abundance_data = get_abundance_data(config)
+!		res = add_spectra(exp_data, config)
 
 	!	 Al 单个测试
-!	config = get_config('config2')
-!	exp_data = get_exp_data('Al_EXP.dat')
-!	cal_data = get_cal_data('spectra_Al3.dat')
-!	result_data = widen(config, exp_data, cal_data, 34.6d0, 2.43d21)
-!	open(22, file = 'widen_Al3.dat', status = 'unknown')
-!	do j = 1, result_data%num
-!		write(22, *) result_data%wavelength_nm(j), result_data%cross_P(j)
-!	end do
-!	close(22)
+	config = get_config('config2')
+	exp_data = get_exp_data('Al_EXP.dat')
+	cal_data = get_cal_data('spectra_Al3.dat')
+	result_data = widen(config, exp_data, cal_data, 34.6d0, 2.43d21)
+	open(22, file = 'widen_Al3.dat', status = 'unknown')
+	do j = 1, result_data%num
+		write(22, *) result_data%wavelength_nm(j), result_data%cross_P(j)
+	end do
+	close(22)
 !		do i = 3, 6
 !			write(filename, '(A10, I1, A4)') 'spectra_Al', i, '.dat'
 !			write(write_filename, '(A8, I1, A4)') 'widen_Al', i, '.dat'
